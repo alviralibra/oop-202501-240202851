@@ -80,4 +80,5 @@ btnAdd.setOnAction(event -> {
 Dengan JavaFX, aplikasi menjadi lebih interaktif. Pemisahan antara GUI dan Database melalui Service sangat penting agar kode mudah diuji dan dikembangkan tanpa merusak logika akses data yang sudah ada.
 ---
 
-
+## Tabel Traceability
+![Screenshot hasil](screenshots/tabel%20traceability.png)
