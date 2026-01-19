@@ -76,3 +76,5 @@ Aplikasi Agri-POS kini telah mencapai tahap fungsional yang lengkap. Dengan peng
 
 ---
 
+## Tabel Traceability
+![Screenshot hasil](screenshots/Tabel%20Traceability%20(2).png)
