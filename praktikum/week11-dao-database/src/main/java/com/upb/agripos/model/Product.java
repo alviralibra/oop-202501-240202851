@@ -13,7 +13,7 @@ public class Product {
         this.price = price;
         this.stock = stock;
      }
-         public String getCode() { return code; }
+    public String getCode() { return code; }
     public String getName() { return name; }
     public double getPrice() { return price; }
     public int getStock() { return stock; }

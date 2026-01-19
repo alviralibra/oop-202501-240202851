@@ -72,7 +72,6 @@ public class ProductDAOImpl implements ProductDAO {
             throw new Exception("Gagal menghapus produk: " + e.getMessage());
         }
     }
-
     @Override
     public Product findByCode(String code) throws Exception {
         String sql = "SELECT * FROM products WHERE code = ?";
