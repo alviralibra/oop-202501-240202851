@@ -12,6 +12,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
@@ -109,14 +110,95 @@ public class PosView {
         VBox vbox = new VBox(10);
         vbox.setPadding(new Insets(10));
 
-        // Product List
+        // === FORM INPUT PRODUK ===
+        GridPane formGrid = new GridPane();
+        formGrid.setHgap(10);
+        formGrid.setVgap(10);
+        formGrid.setPadding(new Insets(10));
+        formGrid.setStyle("-fx-border-color: #ddd; -fx-border-width: 1; -fx-padding: 10;");
+
+        TextField txtCode = new TextField();
+        txtCode.setPromptText("Contoh: P001");
+        txtCode.setPrefWidth(150);
+
+        TextField txtName = new TextField();
+        txtName.setPromptText("Nama produk");
+        txtName.setPrefWidth(200);
+
+        TextField txtCategory = new TextField();
+        txtCategory.setPromptText("Kategori: Benih/Pupuk/Alat/Obat");
+        txtCategory.setPrefWidth(200);
+
+        TextField txtPrice = new TextField();
+        txtPrice.setPromptText("Harga (Rp)");
+        txtPrice.setPrefWidth(150);
+
+        TextField txtStock = new TextField();
+        txtStock.setPromptText("Jumlah stok");
+        txtStock.setPrefWidth(150);
+
+        formGrid.add(new Label("Kode:"), 0, 0);
+        formGrid.add(txtCode, 1, 0);
+        formGrid.add(new Label("Nama:"), 0, 1);
+        formGrid.add(txtName, 1, 1);
+        formGrid.add(new Label("Kategori:"), 0, 2);
+        formGrid.add(txtCategory, 1, 2);
+        formGrid.add(new Label("Harga:"), 0, 3);
+        formGrid.add(txtPrice, 1, 3);
+        formGrid.add(new Label("Stok:"), 0, 4);
+        formGrid.add(txtStock, 1, 4);
+
+        // === BUTTONS ===
+        HBox buttonBox = new HBox(5);
+        buttonBox.setAlignment(Pos.CENTER_LEFT);
+        buttonBox.setPadding(new Insets(5, 0, 0, 0));
+
+        Button btnAdd = new Button("Tambah Produk");
+        btnAdd.setStyle("-fx-padding: 8 15; -fx-font-size: 12;");
+        btnAdd.setOnAction(e -> handleAddProduct(txtCode, txtName, txtCategory, txtPrice, txtStock, formGrid));
+
+        Button btnEdit = new Button("Edit Produk");
+        btnEdit.setStyle("-fx-padding: 8 15; -fx-font-size: 12;");
+        btnEdit.setOnAction(e -> handleUpdateProduct(txtCode, txtName, txtCategory, txtPrice, txtStock, formGrid));
+
+        Button btnDelete = new Button("Hapus Produk");
+        btnDelete.setStyle("-fx-padding: 8 15; -fx-font-size: 12;");
+        btnDelete.setOnAction(e -> handleDeleteProduct());
+
+        Button btnClear = new Button("Bersihkan Form");
+        btnClear.setStyle("-fx-padding: 8 15; -fx-font-size: 12;");
+        btnClear.setOnAction(e -> {
+            txtCode.clear();
+            txtName.clear();
+            txtCategory.clear();
+            txtPrice.clear();
+            txtStock.clear();
+        });
+
+        buttonBox.getChildren().addAll(btnAdd, btnEdit, btnDelete, btnClear);
+
+        // === PRODUCT TABLE ===
         productTable = createProductTable();
+        productTable.setOnMouseClicked(e -> {
+            Product selected = productTable.getSelectionModel().getSelectedItem();
+            if (selected != null) {
+                txtCode.setText(selected.getCode());
+                txtName.setText(selected.getName());
+                txtCategory.setText(selected.getCategory() != null ? selected.getCategory() : "");
+                txtPrice.setText(String.valueOf(selected.getPrice()));
+                txtStock.setText(String.valueOf(selected.getStock()));
+            }
+        });
         refreshProductTable();
 
-        Label label = new Label("Daftar Produk:");
-        label.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+        Label formLabel = new Label("Form Input Produk:");
+        formLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
 
-        vbox.getChildren().addAll(label, productTable);
+        Label tableLabel = new Label("Daftar Produk (Klik untuk Edit):");
+        tableLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+
+        vbox.getChildren().addAll(formLabel, formGrid, buttonBox, new Separator(), tableLabel, productTable);
+        VBox.setVgrow(productTable, javafx.scene.layout.Priority.ALWAYS);
         return vbox;
     }
 
@@ -124,17 +206,29 @@ public class PosView {
         VBox mainBox = new VBox(10);
         mainBox.setPadding(new Insets(10));
 
-        // Left - Product list
+        // Left - Product list with Add button
         VBox leftBox = new VBox(10);
         Label prodLabel = new Label("Daftar Produk:");
         prodLabel.setFont(Font.font("Arial", FontWeight.BOLD, 12));
         productTable = createProductTable();
         refreshProductTable();
-        leftBox.getChildren().addAll(prodLabel, productTable);
+
+        // Add to Cart section
+        HBox addToCartBox = new HBox(5);
+        addToCartBox.setAlignment(Pos.CENTER_LEFT);
+        TextField txtAddQty = new TextField();
+        txtAddQty.setPromptText("Qty");
+        txtAddQty.setPrefWidth(60);
+        Button btnAddCart = new Button("Tambah ke Keranjang");
+        btnAddCart.setStyle("-fx-padding: 5 10;");
+        btnAddCart.setOnAction(e -> handleAddProductToCart(txtAddQty));
+        addToCartBox.getChildren().addAll(new Label("Qty:"), txtAddQty, btnAddCart);
+
+        leftBox.getChildren().addAll(prodLabel, productTable, new Separator(), addToCartBox);
 
         // Right - Cart & Checkout
         VBox rightBox = new VBox(10);
-        rightBox.setPrefWidth(300);
+        rightBox.setPrefWidth(350);
         rightBox.setStyle("-fx-border-color: #ddd; -fx-border-width: 1; -fx-padding: 10;");
 
         Label cartLabel = new Label("Keranjang Belanja:");
@@ -142,11 +236,24 @@ public class PosView {
 
         cartTable = createCartTable();
         HBox cartButtonBox = new HBox(5);
+        cartButtonBox.setAlignment(Pos.CENTER_LEFT);
+        
+        Button updateButton = new Button("Update Qty");
+        updateButton.setStyle("-fx-padding: 5 10;");
+        updateButton.setOnAction(e -> handleUpdateCartQuantity(txtAddQty));
+        
         Button removeButton = new Button("Hapus Item");
+        removeButton.setStyle("-fx-padding: 5 10;");
         removeButton.setOnAction(e -> removeFromCart());
+        
         Button clearButton = new Button("Kosongkan");
-        clearButton.setOnAction(e -> controller.clearCart());
-        cartButtonBox.getChildren().addAll(removeButton, clearButton);
+        clearButton.setStyle("-fx-padding: 5 10;");
+        clearButton.setOnAction(e -> {
+            controller.clearCart();
+            refreshCartTable();
+            showInfo("Keranjang telah dikosongkan");
+        });
+        cartButtonBox.getChildren().addAll(updateButton, removeButton, clearButton);
 
         totalLabel = new Label("Total: Rp 0");
         totalLabel.setFont(Font.font("Arial", FontWeight.BOLD, 14));
@@ -292,9 +399,86 @@ public class PosView {
             try {
                 controller.removeFromCart(selected.getProduct().getCode());
                 refreshCartTable();
+                showInfo("Item dihapus dari keranjang");
             } catch (Exception e) {
                 showError("Error removing item: " + e.getMessage());
             }
+        } else {
+            showError("Pilih item di keranjang untuk dihapus");
+        }
+    }
+
+    // ===== CART MANAGEMENT HANDLERS =====
+
+    private void handleAddProductToCart(TextField txtQty) {
+        try {
+            Product selected = productTable.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                showError("Pilih produk dari daftar terlebih dahulu!");
+                return;
+            }
+
+            String qtyStr = txtQty.getText().trim();
+            if (qtyStr.isEmpty()) {
+                showError("Masukkan jumlah (Qty)!");
+                return;
+            }
+
+            int quantity = Integer.parseInt(qtyStr);
+            if (quantity <= 0) {
+                showError("Jumlah harus lebih dari 0!");
+                return;
+            }
+
+            if (quantity > selected.getStock()) {
+                showError("Jumlah melebihi stok tersedia!\nStok: " + selected.getStock());
+                return;
+            }
+
+            controller.addToCart(selected.getCode(), quantity);
+            refreshCartTable();
+            txtQty.clear();
+            showInfo("✓ Produk ditambahkan ke keranjang");
+        } catch (NumberFormatException ex) {
+            showError("Jumlah harus berupa angka!");
+        } catch (Exception ex) {
+            showError("Error: " + ex.getMessage());
+        }
+    }
+
+    private void handleUpdateCartQuantity(TextField txtQty) {
+        try {
+            CartItem selected = cartTable.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                showError("Pilih item di keranjang untuk update!");
+                return;
+            }
+
+            String qtyStr = txtQty.getText().trim();
+            if (qtyStr.isEmpty()) {
+                showError("Masukkan jumlah baru (Qty)!");
+                return;
+            }
+
+            int newQuantity = Integer.parseInt(qtyStr);
+            if (newQuantity <= 0) {
+                showError("Jumlah harus lebih dari 0!");
+                return;
+            }
+
+            if (newQuantity > selected.getProduct().getStock()) {
+                showError("Jumlah melebihi stok tersedia!\nStok: " + selected.getProduct().getStock());
+                return;
+            }
+
+            controller.updateCartItemQuantity(selected.getProduct().getCode(), newQuantity);
+            refreshCartTable();
+            txtQty.clear();
+            showInfo("✓ Jumlah item diperbarui");
+        } catch (NumberFormatException ex) {
+            showError("Jumlah harus berupa angka!");
+        } catch (Exception ex) {
+            showError("Error: " + ex.getMessage());
         }
     }
 
@@ -351,6 +535,120 @@ public class PosView {
         alert.setTitle("Error");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Info");
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    // ===== PRODUCT CRUD HANDLERS =====
+
+    private void handleAddProduct(TextField txtCode, TextField txtName, TextField txtCategory,
+                                   TextField txtPrice, TextField txtStock, GridPane formGrid) {
+        try {
+            if (txtCode.getText().isEmpty() || txtName.getText().isEmpty()) {
+                showError("Kode dan Nama produk tidak boleh kosong!");
+                return;
+            }
+
+            double price = Double.parseDouble(txtPrice.getText());
+            int stock = Integer.parseInt(txtStock.getText());
+
+            if (price < 0 || stock < 0) {
+                showError("Harga dan Stok tidak boleh negatif!");
+                return;
+            }
+
+            controller.addProduct(
+                txtCode.getText(),
+                txtName.getText(),
+                txtCategory.getText(),
+                price,
+                stock
+            );
+
+            showInfo("Produk berhasil ditambahkan!");
+            txtCode.clear();
+            txtName.clear();
+            txtCategory.clear();
+            txtPrice.clear();
+            txtStock.clear();
+            refreshProductTable();
+        } catch (NumberFormatException ex) {
+            showError("Harga dan Stok harus berupa angka!");
+        } catch (Exception ex) {
+            showError("Error: " + ex.getMessage());
+        }
+    }
+
+    private void handleUpdateProduct(TextField txtCode, TextField txtName, TextField txtCategory,
+                                      TextField txtPrice, TextField txtStock, GridPane formGrid) {
+        try {
+            Product selected = productTable.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                showError("Pilih produk di tabel untuk mengedit!");
+                return;
+            }
+
+            if (txtName.getText().isEmpty()) {
+                showError("Nama produk tidak boleh kosong!");
+                return;
+            }
+
+            double price = Double.parseDouble(txtPrice.getText());
+            int stock = Integer.parseInt(txtStock.getText());
+
+            if (price < 0 || stock < 0) {
+                showError("Harga dan Stok tidak boleh negatif!");
+                return;
+            }
+
+            controller.updateProduct(
+                selected.getCode(),
+                txtName.getText(),
+                txtCategory.getText(),
+                price,
+                stock
+            );
+
+            showInfo("Produk berhasil diperbarui!");
+            refreshProductTable();
+            txtCode.clear();
+            txtName.clear();
+            txtCategory.clear();
+            txtPrice.clear();
+            txtStock.clear();
+        } catch (NumberFormatException ex) {
+            showError("Harga dan Stok harus berupa angka!");
+        } catch (Exception ex) {
+            showError("Error: " + ex.getMessage());
+        }
+    }
+
+    private void handleDeleteProduct() {
+        try {
+            Product selected = productTable.getSelectionModel().getSelectedItem();
+            if (selected == null) {
+                showError("Pilih produk di tabel untuk menghapus!");
+                return;
+            }
+
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Konfirmasi Hapus");
+            confirm.setHeaderText("Hapus Produk?");
+            confirm.setContentText("Apakah Anda yakin ingin menghapus produk:\n\"" + selected.getName() + "\"?");
+
+            if (confirm.showAndWait().get() == ButtonType.OK) {
+                controller.deleteProduct(selected.getCode());
+                showInfo("Produk berhasil dihapus!");
+                refreshProductTable();
+            }
+        } catch (Exception ex) {
+            showError("Error: " + ex.getMessage());
+        }
     }
 
     public Scene getScene() {
