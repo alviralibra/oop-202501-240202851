@@ -31,32 +31,21 @@ Contoh:
 
 ---
 
-## Kode Program
-(Tuliskan kode utama yang dibuat, contoh:  
-
-```java
-// Contoh
-Produk p1 = new Produk("BNH-001", "Benih Padi", 25000, 100);
-System.out.println(p1.getNama());
-```
-)
----
-
 ## SOLID PRINSIP UML
-(UML  
-![Screenshot hasil](/praktikum/week5-abstraction-interface/screenshots/week5-abstraction.png)
-)
+(  
 ---
 (UML  
-![Screenshot hasil](/praktikum/week6-uml-solid/screenshots/uml-usecasediagram.png)
+![Screenshot hasil](/praktikum/week6-uml-solid/screenshots/uml%20usecase.png)
 )
 (UML  
-![Screenshot hasil](/praktikum/week6-uml-solid/screenshots/uml_activitydiagram.png)
+![Screenshot hasil](/praktikum/week6-uml-solid/screenshots//uml%20activity.png)
 )
 (
 ![Screenshot hasil](/praktikum/week6-uml-solid/screenshots/uml_classdiagram.png)
 )
-![Screenshot hasil](/praktikum/week6-uml-solid/screenshots/uml_SEQUENCE%20DIAGRAM.png)
+![Screenshot hasil](/praktikum/week6-uml-solid/screenshots/uml%20seq.png)
+
+![Screenshot hasil](/praktikum/week6-uml-solid/screenshots/class%20diagram.png)
 
 ---
 )
