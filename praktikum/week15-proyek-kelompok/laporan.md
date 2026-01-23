@@ -301,193 +301,19 @@ INSERT INTO products (code, name, category, price, stock) VALUES
 ## 5. UML Diagrams
 
 ### 5.1 Use Case Diagram
-```
-┌─────────────────────────────────────────────────────────────┐
-│                  Agri-POS System                            │
-├─────────────────────────────────────────────────────────────┤
-│                                                             │
-│ ┌──────────┐              ┌─────────────┐                 │
-│ │  Kasir   │              │    Admin    │                 │
-│ └──────┬───┘              └──────┬──────┘                 │
-│        │                         │                        │
-│        ├─ ◇ UC1: Login ──────────┤  (include)             │
-│        │   (all users)           │                        │
-│        │                         │                        │
-│        ├─ UC2: Buat              ├─ UC5: Kelola          │
-│        │        Transaksi        │        Produk         │
-│        │        (Add/Edit/       │        (Admin)        │
-│        │         Delete)         │                        │
-│        │                         │                        │
-│        ├─ UC3: Tambah Produk     ├─ UC6: Lihat Laporan   │
-│        │   ke Keranjang          │        (Admin)        │
-│        │   (Kasir)               │                        │
-│        │                         │                        │
-│        ├─ UC4: Proses            │                        │
-│        │   Pembayaran            │                        │
-│        │   (Tunai/E-Wallet)      │                        │
-│        │                         │                        │
-│        ├─ UC7: Lihat Struk       │                        │
-│        │   (Kasir)               │                        │
-│        │                         │                        │
-└────────┴──────────────────────────┴─────────────────────────┘
 
+![Screenshot hasil](screenshots/uml%20usecase.png)
 Relationships:
 - include: UC2 includes UC3, UC4, UC7 (sequential dalam transaksi)
 - extend: UC6 extends UC2 (laporan bisa diminta kasir, diproses admin)
-```
+
 
 ### 5.2 Class Diagram (Simplified - SOLID Patterns)
-```
-┌─────────────────────────────────────┐  ┌─────────────────────────┐
-│ <<Entity>> Product                  │  │ <<Entity>> CartItem     │
-├─────────────────────────────────────┤  ├─────────────────────────┤
-│ - id: int                           │  │ - product: Product      │
-│ - code: String (unique)             │  │ - quantity: int         │
-│ - name: String                      │  │ - unitPrice: double     │
-│ - category: String                  │  ├─────────────────────────┤
-│ - price: double (>= 0)              │  │ + getSubtotal(): double │
-│ - stock: int (>= 0)                 │  │ + isValidQuantity()     │
-├─────────────────────────────────────┤  │ + updateQuantity(n)     │
-│ + isStockAvailable(qty): boolean    │  └─────────────────────────┘
-│ + reduceStock(qty): void            │
-│ + increaseStock(qty): void          │  ┌─────────────────────────┐
-│ + calculateSubtotal(qty): double    │  │ <<Interface>>           │
-└─────────────────────────────────────┘  │ PaymentMethod (Strategy)│
-                                          ├─────────────────────────┤
-┌────────────────────────────────────┐   │ + process(amt): boolean │
-│ CartService (uses Collections)      │   │ + validate(amt): bool   │
-├────────────────────────────────────┤   │ + getDescription():Str  │
-│ - cartItems: List<CartItem> ◄──────┼───┘
-│ - productDAO: ProductDAO           │   ┌──────────────────┐
-├────────────────────────────────────┤   │ CashPayment      │
-│ + addItem(prod, qty): void         │   ├──────────────────┤
-│ + removeItem(code): void           │   │ - changeAmount   │
-│ + updateItemQuantity(c,n): void    │   │ + calcChange()   │
-│ + calculateTotal(): double         │   └──────────────────┘
-│ + validateCart(): void             │
-│ - DIP to ProductDAO (interface)    │   ┌──────────────────┐
-└────────────────────────────────────┘   │ EWalletPayment   │
-                                          ├──────────────────┤
-┌────────────────────────────────────┐   │ - provider: Str  │
-│ ProductService (DIP)                │   │ - balance:double │
-├────────────────────────────────────┤   │ + validate(amt)  │
-│ - productDAO: ProductDAO (◄────┐   │   └──────────────────┘
-├────────────────────────────────────┤   │
-│ + addProduct(prod): void           │   │ ┌──────────────────┐
-│ + updateProduct(prod): void        │   │ │ ProductDAO       │
-│ + deleteProduct(code): void        │   │ │ (interface-DIP)  │
-│ + getAllProducts(): List           │   │ ├──────────────────┤
-│ - validateProduct(prod): void      │   │ │ + save()         │
-└─────────────────────────────────────┘   │ │ + update()       │
-                                          │ │ + delete()       │
-                                          │ │ + findAll()      │
-                                          │ │ + findByCode()   │
-                                          │ └──────────────────┘
-                                          │         ▲
-                                          │         │ (implements)
-                                          │         │
-                                          │ ┌──────────────────┐
-                                          │ │ ProductDAOImpl    │
-                                          │ ├──────────────────┤
-                                          │ │ - connection: Conn
-                                          │ │ + uses JDBC +    │
-                                          │ │   PreparedStatement
-                                          │ └──────────────────┘
+![Screenshot hasil](screenshots/class%20diagram.png)
 
-┌──────────────────────────┐
-│ <<Singleton>>            │
-│ DatabaseConnection       │
-├──────────────────────────┤
-│ - instance: static       │
-│ - connection: Connection │
-├──────────────────────────┤
-│ + getInstance(): static  │
-│ + getConnection()        │
-│ + closeConnection()      │
-└──────────────────────────┘
-```
 
-### 5.3 Sequence Diagram - Checkout (Payment Success & Alternative)
-```
-User          View         Controller  Service      DAO        Database
-  │             │              │          │          │            │
-  │─ checkout───→│              │          │          │            │
-  │             │──CheckoutReq─→│          │          │            │
-  │             │              │          │          │            │
-  │             │              ├─ validate Cart()    │            │
-  │             │              │          │          │            │
-  │             │              │── cart valid ─────→ │            │
-  │             │              │                     │            │
-  │             │              ├─ processPayment()   │            │
-  │             │              │          │          │            │
-  │             │              │── Payment OK ──────→ │            │
-  │             │              │                     │            │
-  │             │              ├─ checkout()────────→ │            │
-  │             │              │          │    ┌─────┴──────────→ INSERT│
-  │             │              │          │    │    transaction   │
-  │             │              │          │    │◄──── ID returned │
-  │             │              │          │    │                  │
-  │             │              │          │    ├─────────────────→ INSERT│
-  │             │              │          │    │   trans_items    │
-  │             │              │          │    │◄──── OK ─────────│
-  │             │              │          │    │                  │
-  │             │              │          │    ├─────────────────→ UPDATE│
-  │             │              │          │    │   stock          │
-  │             │              │          │    │◄──── OK ─────────│
-  │             │              │          │    │                  │
-  │             │← Receipt ────│← Receipt Response │            │
-  │◄─ Show Receipt─│             │          │          │            │
-  │             │              │          │          │            │
-  alt            │              │          │          │            │
-    [Success]    │              │          │          │            │
-    │ Print OK   │              │          │          │            │
-    │            │              │          │          │            │
-    [Error]      │              │          │          │            │
-    │ Rollback──→ │──────────────→ │───────→ │─────────→ │── DELETE  │
-    │            │   (transaksi) │          │          │   │ trans │
-    │            │              │          │          │   │       │
-  end│            │              │          │          │            │
-  │             │              │          │          │            │
-```
-
-### 5.4 Activity Diagram - Checkout Flow
-```
-┌─────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐
-│ Kasir   │  │    System    │  │ PaymentSvc   │  │  Database    │
-└────┬────┘  └──────┬───────┘  └──────┬───────┘  └──────┬───────┘
-     │              │                 │                 │
-     ├─ Keranjang  ─→                 │                 │
-     │  sudah siap  │                 │                 │
-     │              ├─ Validasi ─────→ │                 │
-     │              │ (Stok OK)        │                 │
-     │              │◄─ Valid ─────────┤                 │
-     │              │                 │                 │
-     ├─ Pilih      ─→                 │                 │
-     │  Pembayaran  ├─ Proses ───────→├─ Charge/Validate
-     │              │ Payment          │                 │
-     │              │◄─ Success ───────┤                 │
-     │              │                 │                 │
-     ├─ Checkout  ──→                 │                 │
-     │ Konfirmasi  ├─ Create Tx ──────────────────────→│
-     │             │                 │        (INSERT)  │
-     │             │◄────────────────────── ID ────────│
-     │             │                 │                 │
-     │             ├─ Save Items ──────────────────────→│
-     │             │                 │     (INSERT)     │
-     │             │◄────────────────────── OK ────────│
-     │             │                 │                 │
-     │             ├─ Update Stock ────────────────────→│
-     │             │                 │     (UPDATE)     │
-     │             │◄────────────────────── OK ────────│
-     │             │                 │                 │
-     │◄─ Receipt ──┤                 │                 │
-     │             │                 │                 │
-     ├─ Print/    ─→                 │                 │
-     │  Close OK   │                 │                 │
-     │             │                 │                 │
-     ├─ Transaksi─ ├─ Clear Cart ────→ (in-memory)    │
-     │  Sukses ✓   │                 │                 │
-     │             │                 │                 │
+### 5.4 Activity Diagram 
+![alt text](<../week6-uml-solid/screenshots/uml activity.png>)
 ```
 
 ---
@@ -841,7 +667,7 @@ java -jar target/week15-proyek-kelompok-1.0-SNAPSHOT-shaded.jar
 
 | Anggota | Peran | Kontribusi | Scope |
 |---------|-------|-----------|-------|
-| Haida - 240202862 | Backend Lead | Model, DAO, Service, Exception, Controller, Main App | 60% |
+| Haidar- 240202862 | Backend Lead | Model, DAO, Service, Exception, Controller, Main App | 60% |
 | [Nama 2] | Frontend | View (LoginView, PosView), UI Layout | 25% |
 | [Nama 3] | Testing | Unit Tests (CartServiceTest), Test Plan | 10% |
 | [Nama 4] | Documentation | Laporan, UML, Database Design | 5% |
@@ -1117,8 +943,8 @@ This project demonstrates:
 
 ---
 
-**Laporan disusun oleh:** Tim Agri-POS  
-**Tanggal:** January 2026  
+**Laporan disusun oleh:**Kelompok 6
+**Tanggal:**  23 JANUARY 2026
 **Status:** ✅ **SELESAI & TERUJI**  
 **Build Status:** ✅ **SUCCESS**  
 **All Tests:** ✅ **PASSED (24/24)**

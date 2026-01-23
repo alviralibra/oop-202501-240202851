@@ -54,7 +54,9 @@ public class AppJavaFX extends Application {
             PosView posView = new PosView(
                 posController,
                 currentUser.getId(),
-                currentUser.getRole()
+                currentUser.getRole(),
+                currentUser.getUsername(),
+                this::showLoginApplication
             );
 
             primaryStage.setTitle("AGRI-POS - " + currentUser.getRole());
@@ -64,6 +66,22 @@ public class AppJavaFX extends Application {
             System.out.println("✓ Main application loaded for user: " + currentUser.getUsername());
         } catch (Exception e) {
             System.err.println("✗ Error loading main application: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void showLoginApplication() {
+        try {
+            loginController.logout();
+            LoginView loginView = new LoginView(loginController, this::showMainApplication);
+
+            primaryStage.setTitle("AGRI-POS - Login");
+            primaryStage.setScene(loginView.getScene());
+            primaryStage.setResizable(false);
+
+            System.out.println("✓ Returned to login screen");
+        } catch (Exception e) {
+            System.err.println("✗ Error returning to login: " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -14,6 +14,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -29,6 +31,8 @@ public class PosView {
     private PosController controller;
     private int currentUserId;
     private String currentUserRole;
+    private String currentUsername;
+    private Runnable onLogoutCallback;
 
     // Tab components
     private TableView<Product> productTable;
@@ -36,10 +40,12 @@ public class PosView {
     private Label totalLabel;
     private Label itemCountLabel;
 
-    public PosView(PosController controller, int userId, String userRole) {
+    public PosView(PosController controller, int userId, String userRole, String username, Runnable onLogout) {
         this.controller = controller;
         this.currentUserId = userId;
         this.currentUserRole = userRole;
+        this.currentUsername = username;
+        this.onLogoutCallback = onLogout;
         initializeUI();
     }
 
@@ -66,19 +72,53 @@ public class PosView {
         titleLabel.setFont(Font.font("Arial", FontWeight.BOLD, 20));
         titleLabel.setStyle("-fx-text-fill: white;");
 
-        Label userLabel = new Label("User: " + currentUserRole + " | Total Items: ");
-        itemCountLabel = new Label("0");
+        Label userLabel = new Label("User: " + currentUsername + " (" + currentUserRole + ")");
         userLabel.setStyle("-fx-text-fill: white;");
+        
+        Label itemCountLabel = new Label("Total Items: 0");
         itemCountLabel.setStyle("-fx-text-fill: white;");
+        this.itemCountLabel = itemCountLabel;
 
-        HBox topBar = new HBox(10);
+        // Logout button
+        Button logoutBtn = new Button("Logout");
+        logoutBtn.setStyle("-fx-padding: 8 15; -fx-font-size: 11; -fx-background-color: #e74c3c; -fx-text-fill: white;");
+        logoutBtn.setOnAction(e -> handleLogout());
+
+        HBox topBar = new HBox(15);
         topBar.setAlignment(Pos.CENTER_LEFT);
         topBar.getChildren().addAll(userLabel, itemCountLabel);
         topBar.setStyle("-fx-background-color: #34495e;");
         topBar.setPadding(new Insets(5));
 
+        // Spacer untuk push logout button ke kanan
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        topBar.getChildren().add(spacer);
+        topBar.getChildren().add(logoutBtn);
+
         vbox.getChildren().addAll(titleLabel, topBar);
         return vbox;
+    }
+
+    private void handleLogout() {
+        // Konfirmasi dialog
+        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmDialog.setTitle("Logout Confirmation");
+        confirmDialog.setHeaderText("Yakin ingin logout?");
+        confirmDialog.setContentText("Session Anda akan dihapus dan kembali ke login screen.");
+
+        var result = confirmDialog.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            System.out.println("✓ User logged out: " + currentUsername);
+            
+            // Clear session data
+            controller.clearCart();
+            
+            // Trigger callback untuk kembali ke login
+            if (onLogoutCallback != null) {
+                onLogoutCallback.run();
+            }
+        }
     }
 
     private TabPane createTabPane() {
