@@ -100,6 +100,18 @@ public class ProductService {
     }
 
     /**
+     * Mencari produk berdasarkan kode dengan pattern matching (untuk filter)
+     * Digunakan oleh KASIR untuk pencarian cepat produk
+     */
+    public List<Product> searchByCode(String codePattern) throws Exception {
+        if (codePattern == null || codePattern.trim().isEmpty()) {
+            throw new ValidationException("Kode pencarian tidak boleh kosong");
+        }
+        
+        return productDAO.findByCodePattern(codePattern.trim());
+    }
+
+    /**
      * Validasi produk sebelum save/update
      */
     private void validateProduct(Product product) throws ValidationException {

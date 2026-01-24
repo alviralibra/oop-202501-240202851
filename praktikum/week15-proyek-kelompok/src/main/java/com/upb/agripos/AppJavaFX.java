@@ -11,7 +11,6 @@ import javafx.stage.Stage;
 /**
  * Main Application Class untuk Agri-POS
  * Entry point untuk JavaFX application
- * Menampilkan identitas: Hello World, I am [Nama]-[NIM]
  */
 public class AppJavaFX extends Application {
     private LoginController loginController;
@@ -24,14 +23,21 @@ public class AppJavaFX extends Application {
         System.out.println("\n╔════════════════════════════════════════╗");
         System.out.println("║  AGRI-POS - Point of Sale System       ║");
         System.out.println("║  Version 1.0                           ║");
-        System.out.println("║  Hello World, I am Haida-240202862     ║");
+        System.out.println("║  SYSTEM AGRI-POS                       ║");
         System.out.println("╚════════════════════════════════════════╝\n");
 
         this.primaryStage = primaryStage;
 
         // Initialize controllers
         this.loginController = new LoginController();
-        this.posController = new PosController();
+        try {
+            this.posController = new PosController();
+        } catch (Exception e) {
+            System.err.println("✗ Error initializing PosController: " + e.getMessage());
+            System.err.println("Note: Make sure PostgreSQL database is running and agripos_database is created");
+            e.printStackTrace();
+            throw new RuntimeException("Failed to initialize application. Check database connection.", e);
+        }
 
         // Create login view
         LoginView loginView = new LoginView(loginController, this::showMainApplication);

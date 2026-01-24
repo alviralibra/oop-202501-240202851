@@ -138,4 +138,31 @@ public class ProductDAOImpl implements ProductDAO {
         
         return null;
     }
+
+    @Override
+    public List<Product> findByCodePattern(String codePattern) throws Exception {
+        List<Product> products = new ArrayList<>();
+        String sql = "SELECT id, code, name, category, price, stock FROM products WHERE code ILIKE ? ORDER BY code";
+        
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            // ILIKE untuk case-insensitive search dengan pattern (PostgreSQL)
+            stmt.setString(1, "%" + codePattern + "%");
+            
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Product product = new Product(
+                        rs.getInt("id"),
+                        rs.getString("code"),
+                        rs.getString("name"),
+                        rs.getString("category"),
+                        rs.getDouble("price"),
+                        rs.getInt("stock")
+                    );
+                    products.add(product);
+                }
+            }
+        }
+        
+        return products;
+    }
 }

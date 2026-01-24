@@ -159,4 +159,26 @@ public class TransactionService {
                     '}';
         }
     }
+
+    /**
+     * Get daily sales data untuk grafik omset penjualan
+     * @return Map<String(date), Double(revenue)> 
+     */
+    public java.util.Map<String, Double> getDailySalesData() throws Exception {
+        List<Transaction> allTransactions = transactionDAO.findAll();
+        
+        java.util.Map<String, Double> dailySales = new java.util.LinkedHashMap<>();
+        
+        // Group by date (dd-MMM format)
+        java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("dd-MMM");
+        
+        for (Transaction transaction : allTransactions) {
+            java.time.LocalDateTime dateTime = transaction.getTransactionDate();
+            String dateKey = dateTime.format(formatter);
+            
+            dailySales.put(dateKey, dailySales.getOrDefault(dateKey, 0.0) + transaction.getTotalAmount());
+        }
+        
+        return dailySales;
+    }
 }

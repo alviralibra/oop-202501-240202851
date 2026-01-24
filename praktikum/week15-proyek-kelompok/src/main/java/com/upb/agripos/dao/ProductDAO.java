@@ -38,4 +38,10 @@ public interface ProductDAO {
      * Mencari produk berdasarkan ID
      */
     Product findById(int productId) throws Exception;
+
+    /**
+     * Mencari produk berdasarkan pattern kode (untuk filter/search)
+     * Contoh: cari "AP" akan mengembalikan semua produk dengan kode mengandung "AP"
+     */
+    List<Product> findByCodePattern(String codePattern) throws Exception;
 }

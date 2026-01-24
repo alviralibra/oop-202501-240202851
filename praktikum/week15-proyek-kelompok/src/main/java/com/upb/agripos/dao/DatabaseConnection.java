@@ -13,7 +13,7 @@ public class DatabaseConnection {
     private static DatabaseConnection instance;
     private Connection connection;
 
-    // Database configuration
+    // implementasi database dengan jdbc 
     private static final String URL = "jdbc:postgresql://localhost:5432/agripos_database";
     private static final String USERNAME = "postgres";
     private static final String PASSWORD = "JERUKAGUNG";

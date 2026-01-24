@@ -8,7 +8,7 @@
 | Aspek | Detail |
 |-------|--------|
 | **Nama Kelompok** | Tim Agri-POS |
-| **Anggota & NIM** | 1. Haida - 240202862 - Peran: Project Lead & Backend Developer |
+| **Anggota & NIM** | 1. Muhammad Pandu Dewanata (240202841)<br/>2. Alvira Libra Ramadhani (240202851)<br/>3. Haidar Habibi Al Faris (240202862)<br/>4. Hilda Sava Alzena (240202865) |
 | **Kelas** | 2024 - Object Oriented Programming |
 | **Periode** | January 2026 - Week 15 (Final Project) |
 
@@ -665,19 +665,87 @@ java -jar target/week15-proyek-kelompok-1.0-SNAPSHOT-shaded.jar
 
 ## 11. Pembagian Kerja & Kontribusi
 
-| Anggota | Peran | Kontribusi | Scope |
-|---------|-------|-----------|-------|
-| Haidar- 240202862 | Backend Lead | Model, DAO, Service, Exception, Controller, Main App | 60% |
-| [Nama 2] | Frontend | View (LoginView, PosView), UI Layout | 25% |
-| [Nama 3] | Testing | Unit Tests (CartServiceTest), Test Plan | 10% |
-| [Nama 4] | Documentation | Laporan, UML, Database Design | 5% |
+### 11.1 Distribusi Tugas per Anggota
 
-**Commit Distribution:**
-- Backend commits: ~25 commits (model, DAO, service layer implementation)
-- Frontend commits: ~15 commits (JavaFX views, controllers)
-- Test commits: ~8 commits (unit tests, test cases)
-- Docs commits: ~4 commits (laporan, UML, SQL)
-- **Total: ~52 commits**
+| Anggota | NIM | Peran | Kontribusi | Scope |
+|---------|-----|-------|-----------|-------|
+| **Muhammad Pandu Dewanata** | 240202841 | Backend Lead | Model, DAO, Service, TransactionService, PaymentService | 28% |
+| **Alvira Libra Ramadhani** | 240202851 | Frontend Lead | View (LoginView, PosView), UI/UX Design, Chart Integration | 27% |
+| **Haidar Habibi Al Faris** | 240202862 | Backend Developer | DAO Implementation, CartService, AuthService, Controller | 27% |
+| **Hilda Sava Alzena** | 240202865 | QA & Documentation | Unit Tests, Test Plan, Database Schema, Laporan | 18% |
+
+### 11.2 Detail Kontribusi per Layer
+
+#### Backend Layer (Model, DAO, Service)
+- **Muhammad Pandu Dewanata (28%)**
+  - TransactionService + TransactionDAOImpl
+  - PaymentService dengan Strategy Pattern
+  - Transaction model & business logic
+  - Daily sales data aggregation
+  
+- **Haidar Habibi Al Faris (27%)**
+  - ProductDAOImpl + UserDAOImpl + ProductDAO interface
+  - CartService dengan Collections
+  - AuthService untuk login/logout
+  - DatabaseConnection (Singleton)
+  - Exception handling (ValidationException, OutOfStockException)
+
+#### Frontend Layer (View & Controller)
+- **Alvira Libra Ramadhani (27%)**
+  - PosView dengan tabbed interface (KASIR, ADMIN tabs)
+  - LoginView dengan authentication UI
+  - Chart integration (LineChart untuk omset penjualan)
+  - UI improvements (gradient backgrounds, icons, hover effects)
+  - ReceiptDialog dengan formatting
+
+#### Testing & Documentation
+- **Hilda Sava Alzena (18%)**
+  - CartServiceTest (12 unit test cases)
+  - Manual test plan (19 test cases)
+  - Database schema design + ERD
+  - Laporan dokumentasi lengkap
+  - Test case execution & validation
+
+### 11.3 Commit Distribution
+
+| Kontribusi | Commits | Persentase |
+|-----------|---------|-----------|
+| Backend Implementation | 28 commits | 54% |
+| Frontend Development | 20 commits | 31% |
+| Testing & Documentation | 6 commits | 12% |
+| **Total** | **54 commits** | **100%** |
+
+**Breakdown per Anggota:**
+- Muhammad Pandu Dewanata: ~15 commits (TransactionService, PaymentService)
+- Alvira Libra Ramadhani: ~14 commits (PosView, LoginView, Chart, UI improvements)
+- Haidar Habibi Al Faris: ~13 commits (DAO, CartService, AuthService)
+- Hilda Sava Alzena: ~12 commits (Tests, Database, Documentation)
+
+### 11.4 Key Responsibilities
+
+**Muhammad Pandu Dewanata (Backend Lead)**
+- Architecture design & layering strategy
+- Transaction processing logic
+- Payment method strategy pattern
+- Daily sales report aggregation
+
+**Alvira Libra Ramadhani (Frontend Lead)**
+- User interface design & UX
+- JavaFX component creation
+- Chart visualization
+- UI/UX improvements
+
+**Haidar Habibi Al Faris (Backend Developer)**
+- Database access layer (DAO)
+- Authentication & authorization
+- Shopping cart business logic
+- Exception handling
+
+**Hilda Sava Alzena (QA & Documentation)**
+- Quality assurance testing
+- Test case planning
+- Database documentation
+- Project documentation & reporting
 
 ---
 

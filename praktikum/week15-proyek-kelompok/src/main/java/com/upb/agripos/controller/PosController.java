@@ -201,4 +201,51 @@ public class PosController {
     public PaymentService getPaymentService() {
         return paymentService;
     }
+
+    /**
+     * Mencari produk berdasarkan kode barang (untuk kasir)
+     */
+    public List<Product> searchProductByCode(String kodeBarang) throws Exception {
+        return productService.searchByCode(kodeBarang);
+    }
+
+    /**
+     * Mendapatkan history transaksi user (untuk KASIR history tab)
+     */
+    public List<com.upb.agripos.model.Transaction> getUserTransactionHistory(int userId) throws Exception {
+        return transactionService.getUserTransactionHistory(userId);
+    }
+
+    /**
+     * Mendapatkan detail transaksi dengan items
+     */
+    public com.upb.agripos.model.Transaction getTransactionDetails(int transactionId) throws Exception {
+        return transactionService.getTransactionDetails(transactionId);
+    }
+
+    /**
+     * Generate receipt untuk transaksi
+     */
+    public String generateTransactionReceipt(int transactionId) throws Exception {
+        com.upb.agripos.model.Transaction transaction = transactionService.getTransactionDetails(transactionId);
+        com.upb.agripos.service.ReceiptService receiptService = new com.upb.agripos.service.ReceiptService();
+        return receiptService.generateReceipt(transaction, "KASIR");
+    }
+
+    /**
+     * Export daftar stok produk ke file CSV dengan custom path
+     */
+    public String exportStockToCSV(List<Product> products, String filePath) throws Exception {
+        com.upb.agripos.service.StockExportService exportService = new com.upb.agripos.service.StockExportService();
+        exportService.exportToCSV(products, filePath);
+        return filePath;
+    }
+
+    /**
+     * Generate default stok filename dengan timestamp
+     */
+    public String generateDefaultStockFilename() {
+        com.upb.agripos.service.StockExportService exportService = new com.upb.agripos.service.StockExportService();
+        return exportService.generateDefaultFilename();
+    }
 }

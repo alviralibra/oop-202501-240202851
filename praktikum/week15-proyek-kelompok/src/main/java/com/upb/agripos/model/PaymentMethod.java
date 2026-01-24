@@ -10,7 +10,9 @@ public interface PaymentMethod {
      * Proses pembayaran dengan metode tertentu
      * @param amount Jumlah pembayaran
      * @return hasil pembayaran (true jika sukses)
+     * 
      */
+    // proses pembayaran
     boolean process(double amount);
 
     /**

@@ -24,6 +24,7 @@ com\upb\agripos\dao\ProductDAO.class
 com\upb\agripos\dao\UserDAOImpl.class
 com\upb\agripos\model\User.class
 com\upb\agripos\view\LoginView.class
+com\upb\agripos\service\StockExportService.class
 com\upb\agripos\service\CartService.class
 com\upb\agripos\view\PosView.class
 com\upb\agripos\model\Transaction.class
