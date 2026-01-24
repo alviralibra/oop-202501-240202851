@@ -7,12 +7,12 @@
 
 ### Tim Agri-POS
 
-| No | Nama | NIM | Peran | Kontribusi |
-|----|------|-----|-------|-----------|
-| 1 | Muhammad Pandu Dewanata | 240202841 | Backend Lead | 28% |
-| 2 | Alvira Libra Ramadhani | 240202851 | Frontend Lead | 27% |
-| 3 | Haidar Habibi Al Faris | 240202862 | Backend Developer | 27% |
-| 4 | Hilda Sava Alzena | 240202865 | QA & Documentation | 18% |
+| No | Nama | NIM | Peran | 
+|----|------|-----|-------|
+| 1 | Muhammad Pandu Dewanata | 240202841 | Backend Lead |
+| 2 | Alvira Libra Ramadhani | 240202851 | Frontend Lead |
+| 3 | Haidar Habibi Al Faris | 240202862 | Backend Developer |
+| 4 | Hilda Sava Alzena | 240202865 | QA & Documentation |
 
 **Kelas:** 2024 - Object Oriented Programming  
 **Periode:** January 2026 - Week 15 (Final Project)  
